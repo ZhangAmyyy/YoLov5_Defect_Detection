@@ -24,7 +24,7 @@ jobs:
       - run:
           name: Run tests
           command: |
-            python test.py
+            python model/test.py
 
 # Orchestrate jobs using workflows
 workflows:
