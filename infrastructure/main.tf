@@ -11,8 +11,7 @@ terraform {
   }
 }
 
-
-#deploy s3
+# 部署 S3 存储桶
 resource "aws_s3_bucket" "yolov5_bucket" {
     bucket = "${var.project}-bucket"
 }
@@ -31,7 +30,7 @@ resource "aws_s3_bucket_versioning" "yolov5_bucket_versioning" {
 
 resource "aws_s3_bucket_policy" "yolov5_bucket_policy" {
   bucket = aws_s3_bucket.yolov5_bucket.id
-  policy = jsondecode({
+  policy = jsonencode({
     "Version": "2012-10-17",
     "Statement":[
         {
@@ -47,24 +46,22 @@ resource "aws_s3_bucket_policy" "yolov5_bucket_policy" {
   })
 }
 
-#deploy lambda
+# 部署 Lambda
 resource "aws_iam_role" "yolov5_image_process_lambda_execution_role" {
     name = "${var.project}-image-process-lambda-execution-role"
 
-    assume_role_policy = jsondecode({
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": "sts:AssumeRole",
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "lambda.amazonaws.com"
-      }
-    }
-  ]
-}
-)
-  
+    assume_role_policy = jsonencode({
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Action": "sts:AssumeRole",
+                "Effect": "Allow",
+                "Principal": {
+                    "Service": "lambda.amazonaws.com"
+                }
+            }
+        ]
+    })
 }
 
 resource "aws_lambda_function" "yolov5_image_process_lambda" {
