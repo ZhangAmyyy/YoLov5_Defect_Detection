@@ -68,7 +68,7 @@ resource "aws_iam_role" "yolov5_image_process_lambda_execution_role" {
 resource "aws_lambda_function" "yolov5_image_process_lambda" {
   function_name = "${var.project}-lambda-function"
   runtime = "python3.8"
-  handler = ""  # 将 handler 设置为空字符串
+  handler = "handler"  # 将 handler 设置为空字符串
   role = aws_iam_role.yolov5_image_process_lambda_execution_role.arn
   memory_size = 256
   timeout = 10
