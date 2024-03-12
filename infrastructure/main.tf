@@ -52,15 +52,18 @@ resource "aws_iam_role" "yolov5_image_process_lambda_execution_role" {
     name = "${var.project}-image-process-lambda-execution-role"
 
     assume_role_policy = jsondecode({
-        "Version" ="2012-10-17",
-        Statement = [{
-            Action = "sts:AssumeRole",
-            Effect = "Allow",
-            Principal = {
-                Service = "lambda.amazonaws.com"
-            }
-        }]
-    })
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "lambda.amazonaws.com"
+      }
+    }
+  ]
+}
+)
   
 }
 
