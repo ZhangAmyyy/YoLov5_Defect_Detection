@@ -11,15 +11,16 @@ terraform {
   }
 }
 
-# 部署 S3 存储桶
+# 首先创建 S3 存储桶及相关配置
 resource "aws_s3_bucket" "yolov5_bucket" {
     bucket = "${var.project}-bucket"
 }
 
-resource "aws_s3_bucket_acl" "yolov5_bucket_acl" {
-    bucket = aws_s3_bucket.yolov5_bucket.id
-    acl = "private"
-}
+# 注释掉 ACL 设置，让 S3 存储桶使用默认的 ACL 设置
+# resource "aws_s3_bucket_acl" "yolov5_bucket_acl" {
+#     bucket = aws_s3_bucket.yolov5_bucket.id
+#     acl = "private"
+# }
 
 resource "aws_s3_bucket_versioning" "yolov5_bucket_versioning" {
     bucket = aws_s3_bucket.yolov5_bucket.id
@@ -46,31 +47,31 @@ resource "aws_s3_bucket_policy" "yolov5_bucket_policy" {
   })
 }
 
-# 部署 Lambda
+# 然后创建 Lambda 函数及相关配置
 resource "aws_iam_role" "yolov5_image_process_lambda_execution_role" {
     name = "${var.project}-image-process-lambda-execution-role"
 
     assume_role_policy = jsonencode({
-        "Version": "2012-10-17",
-        "Statement": [
-            {
-                "Action": "sts:AssumeRole",
-                "Effect": "Allow",
-                "Principal": {
-                    "Service": "lambda.amazonaws.com"
-                }
-            }
-        ]
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Action": "sts:AssumeRole",
+          "Effect": "Allow",
+          "Principal": {
+            "Service": "lambda.amazonaws.com"
+          }
+        }
+      ]
     })
 }
 
 resource "aws_lambda_function" "yolov5_image_process_lambda" {
   function_name = "${var.project}-lambda-function"
   runtime = "python3.8"
-  handler="index.handler"
   role = aws_iam_role.yolov5_image_process_lambda_execution_role.arn
   memory_size = 256
   timeout = 10
+  # 请确保 filename 和 source_code_hash 为空字符串，以便稍后动态设置
   filename = ""
   source_code_hash = ""
 }
