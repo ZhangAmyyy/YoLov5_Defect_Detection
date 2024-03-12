@@ -12,11 +12,11 @@ terraform {
 }
 
 module "s3_module" {
-  source = "./s3.tf"
+  source = "./infrastructure/s3_module"
   
 }
 
 module "lambda_module" {
-  source = "./lambda.tf"
+  source = "./infrastructure/lambda_module" 
   
 }
