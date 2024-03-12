@@ -1,30 +1,65 @@
 # Use the latest 2.1 version of CircleCI pipeline process engine.
 version: 2.1
 
+executors:
+  app-executor:
+    docker:
+      - image: circleci/python:3.8
+  terraform-executor:
+    docker:
+      - image: hashicorp/terraform:0.14.3
+
+aliases:
+  - &terraform-validate
+    executor: terraform-executor
+    steps:
+      - checkout
+      - run:
+          name: Terraform Validate
+          command: |
+            cd infrastructure/
+            terraform init 
+            terraform validate
+  - &terraform-plan-and-apply
+    executor: terraform-executor
+    steps:
+      -checkout
+      - run:
+          name: Terraform Plan
+          command: |
+            cd infrastructure/
+            terraform plan
+      - run:
+          name: Terraform Apply
+          command: |
+            cd infrastructure/
+            terraform apply --auto-approve
+
 # Define a job to be invoked later in a workflow.
 jobs:
   build:
-    # Specify the execution environment.
-    docker:
-      # 使用Python Docker镜像
-      - image: python:3.8
-      
+    # Specify the execution environment.  
     # Add steps to the job
     steps:
       # 检出代码
       - checkout
+      # # 安装依赖
+      # - run:
+      #     name: Install dependencies
+      #     command: |
+      #       pip install -r requirements.txt
+      # # 运行测试
+      # - run:
+      #     name: Run tests
+      #     command: |
+      #       python model/test.py
+  deploy-s3-lambda:
+    executor: terraform-executor
+    steps:
+      - checkout
+      - *terraform-validate
+      - *terraform-plan-and-apply
 
-      # 安装依赖
-      - run:
-          name: Install dependencies
-          command: |
-            pip install -r requirements.txt
-
-      # 运行测试
-      - run:
-          name: Run tests
-          command: |
-            python model/test.py
 
 # Orchestrate jobs using workflows
 workflows:
@@ -32,3 +67,6 @@ workflows:
   build-and-deploy:
     jobs:
       - build
+      - deploy-s3-lambda:
+        requires:
+          -build
