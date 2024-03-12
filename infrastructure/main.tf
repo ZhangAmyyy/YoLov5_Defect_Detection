@@ -1,15 +1,16 @@
 provider "aws" {
-    region = var.region
+    region = "us-west-2"  # 根据您的需求替换为特定的区域
 }
 
 terraform {
   backend "s3" {
-    bucket  = "${var.project}-state"  # 新的存储桶名称
-    key     = "${var.project}-tf-state.tfstate"  # 新的状态文件名称
-    region  = var.region
+    bucket  = "yolov5-state"  # 新的存储桶名称
+    key     = "yolov5-tf-state.tfstate"  # 新的状态文件名称
+    region  = "us-west-2"  # 根据您的需求替换为特定的区域
     encrypt = true
   }
 }
+
 
 #deploy s3
 resource "aws_s3_bucket" "yolov5_bucket" {
