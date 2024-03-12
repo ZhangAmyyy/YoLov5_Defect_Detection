@@ -17,7 +17,7 @@ jobs:
       - image: circleci/python:3.8
     steps:
       - checkout
-  deploy-s3-lambda:
+  deploy-s3:
     executor: terraform-executor
     steps:
       - checkout
@@ -44,6 +44,6 @@ workflows:
   build-and-deploy:
     jobs:
       - build
-      - deploy-s3-lambda:
+      - deploy-s3:
           requires:
             - build
